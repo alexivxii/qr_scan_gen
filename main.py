@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import qrcode
 
+#Commit Alberto
 def generate_qr_code(data, file_name):
     # Create a QR code instance
     qr = qrcode.QRCode(
