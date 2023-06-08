@@ -1,6 +1,11 @@
 import cv2
 import numpy as np
 import qrcode
+#from pyzbar.pyzbar import decode
+#from pyzbar.pyzbar import ZBarSymbol
+import zxingcpp
+from barcode import EAN13
+from barcode.writer import ImageWriter
 
 #Commit Alex
 def generate_qr_code(data, file_name):
@@ -86,5 +91,45 @@ def scan_qr_code():
     capture.release()
     cv2.destroyAllWindows()
 
+def scan_barcode():
+    #image = cv2.imread('BarcodeTest.jpg')
+    capture = cv2.VideoCapture(0)
+
+    while True:
+        _, frame = capture.read()
+
+        #Preprocessing
+        #gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #blur = cv2.GaussianBlur(gray_frame, (5, 5), 0)
+        #ret, final_frame = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+        barcodes = zxingcpp.read_barcodes(frame)
+
+        for barcode in barcodes:
+            # print(barcode.data)
+            info = barcode.text
+            print(info)
+
+        # Display the frame
+        cv2.imshow("QR Code Scanner", frame)
+
+        # Exit loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+             break
+
+    # Release the capture and destroy all windows
+    capture.release()
+    cv2.destroyAllWindows()
+
+def generate_barcode(data, file_name):
+    barcode = EAN13(data, writer=ImageWriter())
+
+    barcode.save(file_name)
+
+data = '123456789012'
+file_name = "barcode"
+generate_barcode(data, file_name)
+
 # Run the QR code scanner
-scan_qr_code()
+#scan_qr_code()
+scan_barcode()
