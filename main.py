@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 import qrcode
-#from pyzbar.pyzbar import decode
-#from pyzbar.pyzbar import ZBarSymbol
 import zxingcpp
+from barcode import Code128
 from barcode import EAN13
+from barcode import ISBN13
 from barcode.writer import ImageWriter
 
 #Commit Alex
@@ -30,7 +30,6 @@ data = "Hello, World!"
 file_name = "qr_code.png"
 generate_qr_code(data, file_name)
 print("QR code generated successfully.")
-
 
 
 def scan_qr_code():
@@ -111,7 +110,7 @@ def scan_barcode():
             print(info)
 
         # Display the frame
-        cv2.imshow("QR Code Scanner", frame)
+        cv2.imshow("Barcode Scanner", frame)
 
         # Exit loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -121,15 +120,43 @@ def scan_barcode():
     capture.release()
     cv2.destroyAllWindows()
 
-def generate_barcode(data, file_name):
-    barcode = EAN13(data, writer=ImageWriter())
+def generate_barcode():
+    choice = input("FOR BARCODE: Code128 - 1 / EAN13 - 2 / ISBN13 - 3 -> ")
+    if choice == "1":
+        data = input("Type the Code128 barcode's content: ")
+        while(not data):
+            data = input("Content can't be empty: ")
+        barcode = Code128(data, writer=ImageWriter())
+    elif choice == "2":
+        data = input("Type the EAN13 barcode's content: ")
+        while (not data):
+            data = input("Content can't be empty: ")
+        barcode = EAN13(data, writer=ImageWriter())
+    elif choice == "3":
+        data = input("Type the ISBN barcode's content: ")
+        while (not data):
+            data = input("Content can't be empty: ")
+        barcode = ISBN13(data, writer=ImageWriter())
+    else:
+        print("Invalid barcode option")
+        return
 
+    file_name = input("Choose a file name: ")
     barcode.save(file_name)
 
-data = '123456789012'
-file_name = "barcode"
-generate_barcode(data, file_name)
+def menu():
+    choice = input("OPTIONS: 1 - SCAN QR CODE / 2 - SCAN BARCODE / 3 - GENERATE QR CODE / 4 - GENERATE BARCODE -> ")
 
-# Run the QR code scanner
-#scan_qr_code()
-scan_barcode()
+    if choice == "1":
+        scan_qr_code()
+    elif choice == "2":
+        scan_barcode()
+    elif choice == "3":
+        generate_qr_code("End of semester", "qr.png")
+    elif choice == "4":
+        generate_barcode()
+    else:
+        print("Invalid option")
+        return
+
+menu()
